@@ -14,7 +14,7 @@ def MAD_rooting_treesample(method):
     the output is written in the same folder with the ending .rooted
     :param method: the name of the method to get the right trees
     '''
-    path = glob.glob("/home/marisa/Dropbox/EVOLAEMP/projects/Project-Borrowing-hgt/inputTrees/"+method+"/*.nwk")
+    path = glob.glob("/home/marisa/Dropbox/EVOLAEMP/projects/Project-Borrowing-hgt/rootingMAD/NELex/"+method+"/*.nwk")
     for filename in path:
         p = subprocess.Popen('mad '+filename+' -n',shell=True)
         os.waitpid(p.pid,0)

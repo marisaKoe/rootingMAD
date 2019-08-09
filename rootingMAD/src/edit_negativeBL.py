@@ -72,7 +72,7 @@ def edit_single_tree(inpath,outpath):
             #result = [float(d) for d in re.findall(regex, l)]
             l = re.sub(regex, str(0.0), l)
             outfile.write(l)
-        outfile.write("\n")
+        #outfile.write("\n")
         outfile.close()
 
 
