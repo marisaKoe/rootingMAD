@@ -8,7 +8,7 @@ Created on 08.08.2019
 import glob, random,re
 from dendropy import Tree, TreeList
 
-def edit_treesample(method,pathBS):
+def edit_treesample_nwk(method,pathBS):
     '''
     read tree files with all replicates in one file
     choose 100 random trees for the hgt detection with TRex
@@ -39,7 +39,22 @@ def edit_treesample(method,pathBS):
             outfile.write(l)
         outfile.write("\n")
         outfile.close()
-
+        
+        
+def read_treesample_mb(method,pathBS):
+    '''
+    this method reads the posterior sample from MrBayes
+    read the treefiles from the runs in mrbayes
+    get the number of trees, draw 100 random numbers
+    get the 100 trees matching the random numbers (number equals line count !!without the nexus head)
+    save the nexus head
+    create a new file out of nexus head and 100 trees
+    read the new treesample in dendropy and convert nexus to newick, save the sample
+    
+    :param method:
+    :param pathBS:
+    '''
+    pass
 
 #####################edit branch length for single tree#################
 
