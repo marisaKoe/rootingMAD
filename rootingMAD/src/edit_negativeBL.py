@@ -5,7 +5,12 @@ Created on 08.08.2019
 
 TODO MrBayes:
 + check location for new nexus files
-+ read them in dendropy and create a newick file for rooting and save them
++ check location for newick files
+
+Think:
+It seems that dendropy transforms small numbers (3,4e-2 to 0,034) is that ok?
+
+
 '''
 
 
@@ -57,7 +62,7 @@ def read_treesample_mb(pathBS):
     read the new treesample in dendropy and convert nexus to newick, save the sample
     
     :param method:
-    :param pathBS:
+    :param pathBS:the path to the posterior samples of MrBayes
     '''
     file_list = glob.glob(pathBS)
     concept_list = set()
@@ -71,17 +76,16 @@ def read_treesample_mb(pathBS):
         file_dict[concept]=list()
         for i,f in enumerate(file_list):
             #print f.startswith(concept)
-            if f.startswith("input/"+concept) == True:
+            if f.startswith("/home/marisa/Schreibtisch/input/"+concept) == True:
                 file_name = file_list[i]
                 file_dict[concept].append(file_name)
     ##for concept and list of files, get the tree offset and number of trees for one file (both have the same number of trees)
     ##compute the random sample
     for concept, list_files in file_dict.items():
-        print list_files
-        numTrees, tree_offset, remaining_trees = read_single_file(list_files[0])
-        print numTrees, tree_offset
-        tree_sample = sorted(random.sample(xrange(tree_offset,numTrees*2), 5))
-        print tree_sample
+        ##get the number of trees and the tree offset
+        numTrees, tree_offset = read_single_file(list_files[0])
+        ##get a list with random numbers which corresponds to numbers of trees in the sample
+        tree_sample = sorted(random.sample(xrange(tree_offset,numTrees*2), 100))
         ##for each value in the tree sample
         values1File = []
         values2File = []
@@ -89,16 +93,19 @@ def read_treesample_mb(pathBS):
             ##if value is smaller or equal the number of trees in the file, take the trees from the first file
             if v <=numTrees:
                 values1File.append(v)
-                #print "in if "+ str(v)
-                #print values1File
             ##else substract number of trees from the value to get the correct line in the sample
             else:
                 v1 = v-numTrees
                 values2File.append(v1)
-                #print "in else " +str(v)+" "+str(v1)
-                #print values2File
-        pathToFile = create_new_nexus(concept,list_files, values1File, values2File)
-        create_newick(pathToFile)
+        
+        ##create path for the nexus file including the tree sample
+        pathToFile = concept+"+treesample.nex"
+        ##create path for the newick file including only the tree sample (needed for rooting and hgt)
+        treeFile = concept+"+treesample.nwk"
+        ##create the new nexus file, which includes only the 100 random choosen trees
+        create_new_nexus(pathToFile,list_files, values1File, values2File)
+        ##create the newick file for the 100 random tree
+        create_newick(pathToFile,treeFile)
         
 
 #############helper method mb##################
@@ -120,11 +127,11 @@ def read_single_file(f):
     ##get the tree offset (number of trees after 25% tree from the burn-in are disjected)
     tree_offset = int(0.25*numTrees)
     ##get the remaining trees to draw the replicates from
-    remaining_trees = numTrees - tree_offset
+    #remaining_trees = numTrees - tree_offset
     ##return the tree offset
-    return numTrees, tree_offset, remaining_trees
+    return numTrees, tree_offset
 
-def create_new_nexus(concept,nexusfileList, value1File, value2File):
+def create_new_nexus(path,nexusfileList, value1File, value2File):
     '''
     create the new nexus file with the treesample
     the tree sample are 100 random posterior trees from both runs of MrBayes exluding the 25%burnin
@@ -168,24 +175,27 @@ def create_new_nexus(concept,nexusfileList, value1File, value2File):
     for v2 in value2File:
         treesample.append(trees2[v2])
     ##create the path for the outputfile and write it
-    path = concept+"+treesample.nex"
     with open(path,"w") as outfile:
         for l in begining:
             outfile.write(l)
         for t in treesample:
             outfile.write(t)
         outfile.write("end;")
-    ##return the path to the new nexus file
-    return path
+
     
 
-def create_newick(pathToFile):
+def create_newick(pathToFile,treeFile):
     '''
     read the nexus file with the 100 sample trees for rooting
     create newick file using dendropy and save the newick file
     :param pathToFile:
     '''
-    pass
+    ##read the newly created nexus file
+    treelist = TreeList.get(path=pathToFile, schema="nexus", rooting="default-unrooted",edge_length_type=float,suppress_edge_lengths=False)
+    for tree in treelist:
+        print tree.as_string("newick")
+    ##write the trees in the List into newick format, suppress_rooting=True will not write rooting statements if there are some
+    treelist.write(path=treeFile,schema="newick",suppress_rooting=True)
 
 
 #####################edit branch length for single tree#################
@@ -280,7 +290,7 @@ def add_constant_BL(treelist, method,concept):
 
 
 if __name__ == '__main__':
-    pathBS = "input/*.t"
+    pathBS = "/home/marisa/Schreibtisch/input/*.t"
     read_treesample_mb(pathBS)
     
     
