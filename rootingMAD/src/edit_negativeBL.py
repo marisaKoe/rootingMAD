@@ -2,11 +2,16 @@
 Created on 08.08.2019
 
 @author: marisa
+
+TODO MrBayes:
++ check location for new nexus files
++ read them in dendropy and create a newick file for rooting and save them
 '''
 
 
-import glob, random,re
+import glob, random,re, os
 from dendropy import Tree, TreeList
+from collections import defaultdict
 
 def edit_treesample_nwk(method,pathBS):
     '''
@@ -41,7 +46,7 @@ def edit_treesample_nwk(method,pathBS):
         outfile.close()
         
         
-def read_treesample_mb(method,pathBS):
+def read_treesample_mb(pathBS):
     '''
     this method reads the posterior sample from MrBayes
     read the treefiles from the runs in mrbayes
@@ -54,7 +59,134 @@ def read_treesample_mb(method,pathBS):
     :param method:
     :param pathBS:
     '''
+    file_list = glob.glob(pathBS)
+    concept_list = set()
+    for f in file_list:
+        concept =  f.split("/")[-1].split(".")[0]
+        concept_list.add(concept)
+    #list(concept_list)
+    ##create a dict with key=concept value=list of files to run the analysis for each concept
+    file_dict = defaultdict()
+    for concept in concept_list:
+        file_dict[concept]=list()
+        for i,f in enumerate(file_list):
+            #print f.startswith(concept)
+            if f.startswith("input/"+concept) == True:
+                file_name = file_list[i]
+                file_dict[concept].append(file_name)
+    ##for concept and list of files, get the tree offset and number of trees for one file (both have the same number of trees)
+    ##compute the random sample
+    for concept, list_files in file_dict.items():
+        print list_files
+        numTrees, tree_offset, remaining_trees = read_single_file(list_files[0])
+        print numTrees, tree_offset
+        tree_sample = sorted(random.sample(xrange(tree_offset,numTrees*2), 5))
+        print tree_sample
+        ##for each value in the tree sample
+        values1File = []
+        values2File = []
+        for v in tree_sample:
+            ##if value is smaller or equal the number of trees in the file, take the trees from the first file
+            if v <=numTrees:
+                values1File.append(v)
+                #print "in if "+ str(v)
+                #print values1File
+            ##else substract number of trees from the value to get the correct line in the sample
+            else:
+                v1 = v-numTrees
+                values2File.append(v1)
+                #print "in else " +str(v)+" "+str(v1)
+                #print values2File
+        pathToFile = create_new_nexus(concept,list_files, values1File, values2File)
+        create_newick(pathToFile)
+        
+
+#############helper method mb##################
+def read_single_file(f):
+    '''
+    read one file from one mr bayes run. get the number of generations/500+1 to get the number of trees in the file
+    the number of trees are the same for all runs
+    0.25*number of trees = the remaining 75% of the trees after burn-in (burn-in at 25% = 25% of the trees need to be disjected)
+    '''
+    ##read the tree file
+    stdin,stdout = os.popen2("tail -n 2 "+f)
+    stdin.close()
+    line = stdout.readlines(); stdout.close()
+    #print line[0].split()
+    numGen = line[0].split()[1].split(".")[1]
+    ##compute the number of trees from the generations
+    numTrees = int(numGen)/500+1
+    #print numTrees
+    ##get the tree offset (number of trees after 25% tree from the burn-in are disjected)
+    tree_offset = int(0.25*numTrees)
+    ##get the remaining trees to draw the replicates from
+    remaining_trees = numTrees - tree_offset
+    ##return the tree offset
+    return numTrees, tree_offset, remaining_trees
+
+def create_new_nexus(concept,nexusfileList, value1File, value2File):
+    '''
+    create the new nexus file with the treesample
+    the tree sample are 100 random posterior trees from both runs of MrBayes exluding the 25%burnin
+    the trees are saved in a new nexus file
+    :param concept:the name of the concept
+    :param nexusfileList:the list with all nexus files from MrBayes
+    :param value1File:the values for the trees for the first file
+    :param value2File:the values for the trees for the second file
+    :return pathToFile: the path to the new nexus file
+    '''
+    ##do everything for the first run
+    with open(nexusfileList[0],"r") as f1:
+        data1 = f1.readlines()
+    ###for each line in the file, get the lines, which are not trees
+    begining = []
+    trees1 = []
+    for l in data1:
+        ##get the lines which are not trees (the begining of the nexus file including all white spaces, punctuaiton and newlines)
+        if not l.startswith("   tree") and not l.startswith("end;"):
+            begining.append(l)
+        ##get all the lines which are trees including white spaces, punctuation and newlines
+        elif l.startswith("   tree"):
+            trees1.append(l)
+            
+    ###get the trees from the second file
+    with open(nexusfileList[1],"r") as f2:
+        data2 = f2.readlines()
+
+    trees2 = []
+    for l in data2:
+        ##get all the lines which are trees including white spaces, punctuation and newlines
+        if l.startswith("   tree"):
+            trees2.append(l)
+            
+    ##create the tree sample for this file
+    treesample=[]
+    ##append the trees from the first file
+    for v1 in value1File:
+        treesample.append(trees1[v1])
+    ##append the trees from the second file
+    for v2 in value2File:
+        treesample.append(trees2[v2])
+    ##create the path for the outputfile and write it
+    path = concept+"+treesample.nex"
+    with open(path,"w") as outfile:
+        for l in begining:
+            outfile.write(l)
+        for t in treesample:
+            outfile.write(t)
+        outfile.write("end;")
+    ##return the path to the new nexus file
+    return path
+    
+
+def create_newick(pathToFile):
+    '''
+    read the nexus file with the 100 sample trees for rooting
+    create newick file using dendropy and save the newick file
+    :param pathToFile:
+    '''
     pass
+
 
 #####################edit branch length for single tree#################
 
@@ -148,4 +280,9 @@ def add_constant_BL(treelist, method,concept):
 
 
 if __name__ == '__main__':
-    pass
+    pathBS = "input/*.t"
+    read_treesample_mb(pathBS)
+    
+    
+    
+    
