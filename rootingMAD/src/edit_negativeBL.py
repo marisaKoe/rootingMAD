@@ -8,7 +8,7 @@ TODO MrBayes:
 + check location for newick files
 
 Think:
-It seems that dendropy transforms small numbers (3,4e-2 to 0,034) is that ok?
+It seems that dendropy transforms small numbers (3,4e-2 to 0,034) is that ok? - yes totally fine
 
 
 '''
