@@ -192,8 +192,8 @@ def create_newick(pathToFile,treeFile):
     '''
     ##read the newly created nexus file
     treelist = TreeList.get(path=pathToFile, schema="nexus", rooting="default-unrooted",edge_length_type=float,suppress_edge_lengths=False)
-    for tree in treelist:
-        print tree.as_string("newick")
+    #for tree in treelist:
+    #    print tree.as_string("newick")
     ##write the trees in the List into newick format, suppress_rooting=True will not write rooting statements if there are some
     treelist.write(path=treeFile,schema="newick",suppress_rooting=True)
 
