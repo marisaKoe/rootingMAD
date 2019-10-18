@@ -18,6 +18,8 @@ import glob, random,re, os
 from dendropy import Tree, TreeList
 from collections import defaultdict
 
+###########################pmi method###################################
+
 def edit_treesample_nwk(method,pathBS):
     '''
     read tree files with all replicates in one file
@@ -50,7 +52,8 @@ def edit_treesample_nwk(method,pathBS):
         outfile.write("\n")
         outfile.close()
         
-        
+#################################Mr Bayes#######################################
+
 def read_treesample_mb(pathBS):
     '''
     this method reads the posterior sample from MrBayes
@@ -76,7 +79,7 @@ def read_treesample_mb(pathBS):
         file_dict[concept]=list()
         for i,f in enumerate(file_list):
             #print f.startswith(concept)
-            if f.startswith("/home/marisa/Schreibtisch/input/"+concept) == True:
+            if f.startswith("/input/"+concept) == True:
                 file_name = file_list[i]
                 file_dict[concept].append(file_name)
     ##for concept and list of files, get the tree offset and number of trees for one file (both have the same number of trees)
