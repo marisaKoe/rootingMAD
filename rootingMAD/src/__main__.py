@@ -20,7 +20,7 @@ def MAD_rooting_treesample(method):
     ##ml
     #path = glob.glob("/home/marisakoe/Dropbox/EVOLAEMP/projects/Project-ConceptTrees-CharacterBased/NELex/ML_iqtree/NgramsNW/bootstrapReplicates/*.boottrees")
     ##mb
-    path = glob.glob("/home/marisakoe/Dropbox/EVOLAEMP/projects/Project-ConceptTrees-CharacterBased/NELex/MrBayes_Trees/new100trees/*.nwk")
+    path = glob.glob("/home/marisa/Dropbox/EVOLAEMP/projects/Project-ConceptTrees-CharacterBased/NELex/MrBayes_Trees/new100trees/*.nwk")
     for filename in path:
         p = subprocess.Popen('mad '+filename+' -n',shell=True)
         os.waitpid(p.pid,0)
