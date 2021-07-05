@@ -6,7 +6,7 @@ Created on 08.08.2019
 
 import glob, os, subprocess
 from dendropy import Tree
-#import edit_negativeBL
+
 
 def MAD_rooting_treesample(method):
     '''
@@ -16,11 +16,11 @@ def MAD_rooting_treesample(method):
     :param method: the name of the method to get the right trees
     '''
     ##pmi path
-    #path = glob.glob("/home/marisa/Dropbox/EVOLAEMP/projects/Project-Borrowing-hgt/rootingMAD/NELex/"+method+"/*.nwk")
+    #path = glob.glob("yourFiles/*.nwk")
     ##ml
-    #path = glob.glob("/home/marisakoe/Dropbox/EVOLAEMP/projects/Project-ConceptTrees-CharacterBased/NELex/ML_iqtree/NgramsNW/bootstrapReplicates/*.boottrees")
+    #path = glob.glob("yourFiles/*.boottrees")
     ##mb
-    path = glob.glob("/home/marisa/Dropbox/EVOLAEMP/projects/Project-ConceptTrees-CharacterBased/NELex/MrBayes_Trees/new100trees/*.nwk")
+    path = glob.glob("yourFiles/*.nwk")
     for filename in path:
         p = subprocess.Popen('mad '+filename+' -n',shell=True)
         os.waitpid(p.pid,0)
@@ -48,13 +48,11 @@ def convert_singleTreeMB(path):
     :param path:
     '''
     path = glob.glob(path+"*.tre")
-    #newNames = []
     ##converts the file to newick and saves the trees
     for filename in path:
         t = Tree.get(path=filename, schema="nexus")#,rooting="default-unrooted")#,edge_length_type=float,suppress_edge_lengths=False)
         newfilename = filename.split(".")[0]
         newfilename = newfilename+".nwk"
-        #newNames.append(newfilename)
         newT = t.as_string(schema="newick",suppress_rooting=True)
         newT = newT[:-6]+";"
         with open(newfilename,"w") as fout:
