@@ -3,12 +3,6 @@ Created on 08.08.2019
 
 @author: marisa
 
-TODO MrBayes:
-+ check location for new nexus files
-+ check location for newick files
-
-Think:
-It seems that dendropy transforms small numbers (3,4e-2 to 0,034) is that ok? - yes totally fine
 
 
 '''
@@ -32,7 +26,6 @@ def edit_treesample_nwk(method,pathBS):
     ##regular expresion to set negative branch length to 0.0
     regex = re.compile(r'-\d\.\d+(?:\.\d+)?')
     list_files = glob.glob(pathBS)
-    #list_files = ["nelexAsjp_Berg::N+fastmeTree.nwk"]
     for f in list_files:
         ##get concept for distance based trees !!!!check file name of others
         concept = f.split("/")[-1].split("+")[0]
@@ -42,7 +35,7 @@ def edit_treesample_nwk(method,pathBS):
             data = file1.readlines()
         tree_sample = random.sample(data, 100)
         ##save files with 100 tree samples and without negative branch length
-        path = "/home/marisa/Dropbox/EVOLAEMP/projects/Project-Borrowing-hgt/inputTrees/"+method+"/"+concept+"+treesample.nwk"
+        path = "your path"
         outfile = open(path,"w")
             
         for l in tree_sample:
@@ -214,7 +207,6 @@ def edit_single_tree(inpath,outpath):
     ##regular expresion to set negative branch length to 0.0
     regex = re.compile(r'-\d\.\d+(?:\.\d+)?')
     list_files = glob.glob(inpath)
-    #list_files = ["nelexAsjp_Berg::N+fastmeTree.nwk"]
     for f in list_files:
         print f
         ##get concept for distance based trees !!!!check file name of others
@@ -249,7 +241,6 @@ def edit_BL_constant(method,pathBS):
     :param pathBS: the path for the bootstrapping trees
     '''
     list_files = glob.glob(pathBS)
-    #list_files = ["nelexAsjp_Berg::N+fastmeTree.nwk"]
     for f in list_files:
         ##get concept for distance based trees !!!!check file name of others
         concept = f.split("/")[-1].split("+")[0]
@@ -275,8 +266,6 @@ def add_constant_BL(treelist, method,concept):
     read the bootstrap replicates from the distance based-methods and edit all negative branch lenght in all trees.
     save the trees to the folder.
     '''
-    #treelist = TreeList.get(path="/home/marisakoe/Dropbox/EVOLAEMP/projects/Project-Borrowing-hgt/hgt-test/nelexAsjp_Berg::N+allTrees.nwk", schema="newick")
-    #print len(treelist)
     treelist_corrected = TreeList()
     count = 0
     for t in treelist:
@@ -285,15 +274,12 @@ def add_constant_BL(treelist, method,concept):
             if not str(eg.length) == "None":
                 eg.length += 1.0
         treelist_corrected.append(t)
-    
-    #print count
-    #print len(treelist_corrected)
-    #treelist_corrected.write(path="/home/marisakoe/Dropbox/EVOLAEMP/projects/Project-BootstrappingWithNoise/nelex/"+method+"/Trees_corrected/"+concept, schema="newick")
-    treelist_corrected.write(path="/home/marisa/Dropbox/EVOLAEMP/projects/Project-Borrowing-hgt/inputTrees/"+method+"/"+concept+"+treesample.nwk", schema="newick")
+   
+    treelist_corrected.write(path="yourpath"+method+"/"+concept+"+treesample.nwk", schema="newick")
 
 
 if __name__ == '__main__':
-    pathBS = "/home/marisa/Schreibtisch/input/*.t"
+    pathBS = "yourpath"
     read_treesample_mb(pathBS)
     
     
