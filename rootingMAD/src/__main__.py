@@ -66,14 +66,8 @@ if __name__ == '__main__':
     
     ###pmi fastme trees (single trees)
     #method = "PMI_multipleData"
-    #inpath = "/home/marisakoe/Dropbox/EVOLAEMP/projects/Project-ConceptTrees-DistanceMethods/NELex/PMI_based_methods/PMI_multipleData/phylipTrees/fastme/*.nwk"
-    #outpath = "/home/marisakoe/Dropbox/EVOLAEMP/projects/Project-ConceptTrees-DistanceMethods/NELex/PMI_based_methods/PMI_multipleData_rootedTrees/"
-    #edit_negativeBL.edit_single_tree(inpath, outpath)
-    ####iqtree
-    #outpath = "/home/marisakoe/Dropbox/EVOLAEMP/projects/Project-ConceptTrees-CharacterBased/NELex/ML_iqtree/NgramsNW/iqTrees/"
-    #MAD_rooting_singleTree(outpath)
+
     ##mrBayes MCC trees
-    #outpath = "/home/marisakoe/Dropbox/EVOLAEMP/projects/Project-ConceptTrees-CharacterBased/NELex/MrBayes_Trees/mccTrees/"
     #convert_singleTreeMB(outpath)
     #MAD_rooting_singleTree(outpath)
     
@@ -83,8 +77,6 @@ if __name__ == '__main__':
     ##only do for the optimal methods, since they are used for the HGT transfer
     ##pmi bootstrapping with Noise
     #methodBS = "pmiMultidata"
-    #pathBS = "/home/marisa/Dropbox/EVOLAEMP/projects/Project-BootstrappingWithNoise/nelex/"+methodBS+"/trees/*.nwk"
-    #edit_negativeBL.edit_treesample(methodBS, pathBS)
     #MAD_rooting_treesample(methodBS)
     ####iqtree
     #methodBS = "ML_ngramsNW"
